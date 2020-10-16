@@ -61,8 +61,8 @@ class VodService(Service):
                                                 {}),
                     "ApplyUpload": ApiInfo("GET", "/", {"Action": "ApplyUpload", "Version": "2018-01-01"}, {}, {}),
                     "CommitUpload": ApiInfo("POST", "/", {"Action": "CommitUpload", "Version": "2018-01-01"}, {}, {}),
-                    "SetVideoPublishStatus": ApiInfo("POST", "/",
-                                                     {"Action": "SetVideoPublishStatus", "Version": "2018-01-01"}, {},
+                    "UpdateVideoPublishStatus": ApiInfo("GET", "/",
+                                                     {"Action": "UpdateVideoPublishStatus", "Version": "2020-08-01"}, {},
                                                      {}),
                     "GetCdnDomainWeights": ApiInfo("GET", "/",
                                                    {"Action": "GetCdnDomainWeights", "Version": "2019-07-01"}, {}, {}),
@@ -70,7 +70,11 @@ class VodService(Service):
                                                       {"Action": "GetOriginVideoPlayInfo", "Version": "2020-08-01"}, {},
                                                       {}),
                     "RedirectPlay": ApiInfo("GET", "/", {"Action": "RedirectPlay", "Version": "2020-08-01"}, {}, {}),
-                    "ModifyVideoInfo": ApiInfo("POST", "/", {"Action": "ModifyVideoInfo", "Version": "2018-01-01"}, {},
+                    "UpdateVideoInfo": ApiInfo("GET", "/", {"Action": "UpdateVideoInfo", "Version": "2020-08-01"}, {},
+                                               {}),
+                    "GetVideoInfos": ApiInfo("GET", "/", {"Action": "GetVideoInfos", "Version": "2020-08-01"}, {},
+                                               {}),
+                    "GetRecommendedPosters": ApiInfo("GET", "/", {"Action": "GetRecommendedPosters", "Version": "2020-08-01"}, {},
                                                {}),
                     }
         return api_info
@@ -193,21 +197,42 @@ class VodService(Service):
     def upload_poster(self, vid, space_name, file_path, file_type):
         oid, session_key, avg_speed = self.upload(space_name, file_path, file_type)
 
-        user_info = {'PosterUri': oid}
-        body = {'SpaceName': space_name, 'Vid': vid, 'Info': user_info}
-        body = json.dumps(body)
-
-        resp = self.modify_video_info(body)
-        if 'Error' in resp['ResponseMetadata']:
+        resp = self.update_video_info(vid=vid, poster_uri=oid)
+        if 'Error' in resp['ResponseMetadata'] and resp['ResponseMetadata']['Error']['Code'] != 'Success':
             raise Exception(resp['ResponseMetadata']['Error']['Message'])
-        if not ('BaseResp' in resp['Result']) or not ('StatusCode' in resp['Result']['BaseResp']) or \
-                resp['Result']['BaseResp']['StatusCode'] != 0:
-            raise Exception("update post uri error via ModifyVideoInfo")
         return oid
 
     # video info
-    def modify_video_info(self, body):
-        res = self.json('ModifyVideoInfo', {}, body)
+    def update_video_info(self, vid='', poster_uri=None, title=None, description=None, tags=None):
+        params = {'Vid':vid}
+        if poster_uri is not None:
+            params['PosterUri'] = poster_uri
+        if title is not None:
+            params['Title'] = title
+        if description is not None:
+            params['Description'] = description
+        if tags is not None:
+            params['Tags'] = tags
+
+        res = self.get('UpdateVideoInfo', params)
+        if res == '':
+            raise Exception("empty response")
+        res_json = json.loads(res)
+        return res_json
+
+    # get video infos
+    def get_video_info(self, vids=[]):
+        params = {'Vids': ','.join(vids)}
+        res = self.get('GetVideoInfos', params)
+        if res == '':
+            raise Exception("empty response")
+        res_json = json.loads(res)
+        return res_json
+
+    # get recommended posters
+    def get_recommended_posters(self, vids=[]):
+        params = {'Vids': ','.join(vids)}
+        res = self.get('GetRecommendedPosters', params)
         if res == '':
             raise Exception("empty response")
         res_json = json.loads(res)
@@ -229,9 +254,9 @@ class VodService(Service):
         return res_json
 
     # publish
-    def set_video_publish_status(self, body):
-        params = {}
-        res = self.json('SetVideoPublishStatus', params, json.dumps(body))
+    def update_video_publish_status(self, vid='', status=''):
+        params = {'Vid':vid, 'Status':status}
+        res = self.get('UpdateVideoPublishStatus', params)
         if res == '':
             raise Exception("empty response")
         res_json = json.loads(res)
