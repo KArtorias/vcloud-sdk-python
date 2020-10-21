@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 from ttvcloud.vod.VodService import VodService
+from ttvcloud.vod.Model import *
 
 if __name__ == '__main__':
     vod_service = VodService()
@@ -13,6 +14,10 @@ if __name__ == '__main__':
     vid = 'vid'
     publish_status = 'Published'
     unpublish_status = 'Unpublished'
-
-    resp = vod_service.update_video_publish_status(vid, unpublish_status)
-    print(resp)
+    req = UpdateVideoPublishStatusRequest()
+    req.set_vid(vid)
+    req.set_status(unpublish_status)
+    try:
+        vod_service.update_video_publish_status(req)
+    except Exception as e:
+        print(e)

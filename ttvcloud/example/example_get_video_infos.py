@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 from ttvcloud.vod.VodService import VodService
+from ttvcloud.vod.Model import *
 
 if __name__ == '__main__':
     vod_service = VodService()
@@ -11,6 +12,8 @@ if __name__ == '__main__':
     # vod_service.set_sk('your sk')
 
     vids = ['vid1', 'vid2', 'vid3']
+    req = GetVideoInfosRequest()
+    req.set_vids(vids)
 
-    resp = vod_service.get_video_info(vids)
+    resp = vod_service.get_video_infos(req)
     print(resp)

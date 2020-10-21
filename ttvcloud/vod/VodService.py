@@ -15,6 +15,7 @@ from ttvcloud.base.Service import Service
 from ttvcloud.const.Const import *
 from ttvcloud.Policy import SecurityToken2, InnerToken, ComplexEncoder, Policy, Statement
 from ttvcloud.util.Util import *
+from ttvcloud.vod.Model import *
 
 
 class VodService(Service):
@@ -197,46 +198,61 @@ class VodService(Service):
     def upload_poster(self, vid, space_name, file_path, file_type):
         oid, session_key, avg_speed = self.upload(space_name, file_path, file_type)
 
-        resp = self.update_video_info(vid=vid, poster_uri=oid)
-        if 'Error' in resp['ResponseMetadata'] and resp['ResponseMetadata']['Error']['Code'] != 'Success':
-            raise Exception(resp['ResponseMetadata']['Error']['Message'])
-        return oid
+        req = UpdateVideoInfoRequest()
+        req.set_vid(vid)
+        req.set_poster_uri(oid)
+        try:
+            self.update_video_info(req)
+            return oid
+        except Exception:
+            raise
 
     # video info
-    def update_video_info(self, vid='', poster_uri=None, title=None, description=None, tags=None):
-        params = {'Vid':vid}
-        if poster_uri is not None:
-            params['PosterUri'] = poster_uri
-        if title is not None:
-            params['Title'] = title
-        if description is not None:
-            params['Description'] = description
-        if tags is not None:
-            params['Tags'] = tags
+    def update_video_info(self, req):
+        params = {'Vid':req.get_vid()}
+        if req.get_poster_uri() is not None:
+            params['PosterUri'] = req.get_poster_uri()
+        if req.get_title() is not None:
+            params['Title'] = req.get_title()
+        if req.get_description() is not None:
+            params['Description'] = req.get_description()
+        if req.get_tags() is not None:
+            params['Tags'] = req.get_tags()
 
         res = self.get('UpdateVideoInfo', params)
         if res == '':
             raise Exception("empty response")
         res_json = json.loads(res)
-        return res_json
+        if "Error" in res_json['ResponseMetadata']:
+            raise Exception(res_json['ResponseMetadata']['Error']['Code'])
 
     # get video infos
-    def get_video_info(self, vids=[]):
-        params = {'Vids': ','.join(vids)}
+    def get_video_infos(self, req):
+        params = {'Vids': ','.join(req.get_vids())}
         res = self.get('GetVideoInfos', params)
         if res == '':
             raise Exception("empty response")
         res_json = json.loads(res)
-        return res_json
+        if 'Error' not in res_json['ResponseMetadata']:
+            resp = GetVideoInfosResponse()
+            resp._deserialize(res_json['Result'])
+            return resp
+        else:
+            raise Exception(res_json['ResponseMetadata']['Error']['Code'])
 
     # get recommended posters
-    def get_recommended_posters(self, vids=[]):
-        params = {'Vids': ','.join(vids)}
+    def get_recommended_posters(self, req):
+        params = {'Vids': ','.join(req.get_vids())}
         res = self.get('GetRecommendedPosters', params)
         if res == '':
             raise Exception("empty response")
         res_json = json.loads(res)
-        return res_json
+        if 'Error' not in res_json['ResponseMetadata']:
+            resp = GetRecommendedPostersResponse()
+            resp._deserialize(res_json['Result'])
+            return resp
+        else:
+            raise Exception(res_json['ResponseMetadata']['Error']['Code'])
 
     @staticmethod
     def crc32(file_path):
@@ -254,13 +270,14 @@ class VodService(Service):
         return res_json
 
     # publish
-    def update_video_publish_status(self, vid='', status=''):
-        params = {'Vid':vid, 'Status':status}
+    def update_video_publish_status(self, req):
+        params = {'Vid':req.get_vid(), 'Status':req.get_status()}
         res = self.get('UpdateVideoPublishStatus', params)
         if res == '':
             raise Exception("empty response")
         res_json = json.loads(res)
-        return res_json
+        if "Error" in res_json['ResponseMetadata']:
+            raise Exception(res_json['ResponseMetadata']['Error']['Code'])
 
     # img
     def get_domain_weights(self, space_name):
