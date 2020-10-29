@@ -13,6 +13,7 @@ _sym_db = _symbol_database.Default()
 
 from . import base_pb2 as base__pb2
 from google.protobuf import wrappers_pb2 as google_dot_protobuf_dot_wrappers__pb2
+from google.api import annotations_pb2 as google_dot_api_dot_annotations__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -21,9 +22,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'\n\035com.bytedanceapi.model.commonB\010VodMediaP\001Z\010.;models\240\001\001\330\001\001\302\002\000\312\002\021Vcloud\\Models\\Vod\342\002\031Vcloud\\Models\\GPBMetadata',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0fvod_media.proto\x12\x11Vcloud.Models.Vod\x1a\nbase.proto\x1a\x1egoogle/protobuf/wrappers.proto\">\n\x1fUpdateVideoPublishStatusRequest\x12\x0b\n\x03Vid\x18\x01 \x01(\t\x12\x0e\n\x06Status\x18\x02 \x01(\t\"b\n UpdateVideoPublishStatusResponse\x12>\n\x10ResponseMetadata\x18\x01 \x01(\x0b\x32$.Vcloud.Models.Base.ResponseMetadata\"\xe2\x01\n\x16UpdateVideoInfoRequest\x12\x0b\n\x03Vid\x18\x01 \x01(\t\x12/\n\tPosterUri\x18\x02 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12+\n\x05Title\x18\x03 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12\x31\n\x0b\x44\x65scription\x18\x04 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12*\n\x04Tags\x18\x05 \x01(\x0b\x32\x1c.google.protobuf.StringValue\"Y\n\x17UpdateVideoInfoResponse\x12>\n\x10ResponseMetadata\x18\x01 \x01(\x0b\x32$.Vcloud.Models.Base.ResponseMetadata\"$\n\x14GetVideoInfosRequest\x12\x0c\n\x04Vids\x18\x01 \x03(\t\"W\n\x0f\x41udioStreamMeta\x12\r\n\x05\x43odec\x18\x01 \x01(\t\x12\x10\n\x08\x44uration\x18\x02 \x01(\x02\x12\x12\n\nSampleRate\x18\x03 \x01(\x03\x12\x0f\n\x07\x42itrate\x18\x04 \x01(\x03\"\x83\x01\n\x0fVideoStreamMeta\x12\r\n\x05\x43odec\x18\x01 \x01(\t\x12\x0e\n\x06Height\x18\x02 \x01(\x03\x12\r\n\x05Width\x18\x03 \x01(\x03\x12\x10\n\x08\x44uration\x18\x04 \x01(\x02\x12\x12\n\nDefinition\x18\x05 \x01(\t\x12\x0f\n\x07\x42itrate\x18\x06 \x01(\x03\x12\x0b\n\x03\x46ps\x18\x07 \x01(\x02\"\xb1\x02\n\rTranscodeInfo\x12\x0e\n\x06\x46ileId\x18\x01 \x01(\t\x12\x0b\n\x03Md5\x18\x02 \x01(\t\x12\x10\n\x08\x46ileType\x18\x03 \x01(\t\x12\x10\n\x08LogoType\x18\x04 \x01(\t\x12\x0f\n\x07\x45ncrypt\x18\x05 \x01(\x08\x12\x0e\n\x06\x46ormat\x18\x06 \x01(\t\x12\x10\n\x08\x44uration\x18\x07 \x01(\x02\x12\x0c\n\x04Size\x18\x08 \x01(\x03\x12\x10\n\x08StoreUri\x18\t \x01(\t\x12;\n\x0fVideoStreamMeta\x18\n \x01(\x0b\x32\".Vcloud.Models.Vod.VideoStreamMeta\x12;\n\x0f\x41udioStreamMeta\x18\x0b \x01(\x0b\x32\".Vcloud.Models.Vod.AudioStreamMeta\x12\x12\n\nCreateTime\x18\x0c \x01(\t\"\xf1\x01\n\nSourceInfo\x12\x0e\n\x06\x46ileId\x18\x01 \x01(\t\x12\x0b\n\x03Md5\x18\x02 \x01(\t\x12\x10\n\x08\x46ileType\x18\x03 \x01(\t\x12\r\n\x05\x43odec\x18\x04 \x01(\t\x12\x0e\n\x06Height\x18\x05 \x01(\x03\x12\r\n\x05Width\x18\x06 \x01(\x03\x12\x0e\n\x06\x46ormat\x18\x07 \x01(\t\x12\x10\n\x08\x44uration\x18\x08 \x01(\x02\x12\x0c\n\x04Size\x18\t \x01(\x03\x12\x10\n\x08StoreUri\x18\n \x01(\t\x12\x12\n\nDefinition\x18\x0b \x01(\t\x12\x0f\n\x07\x42itrate\x18\x0c \x01(\x03\x12\x0b\n\x03\x46ps\x18\r \x01(\x02\x12\x12\n\nCreateTime\x18\x0e \x01(\t\"\xb0\x01\n\tBasicInfo\x12\x11\n\tSpaceName\x18\x01 \x01(\t\x12\x0b\n\x03Vid\x18\x02 \x01(\t\x12\r\n\x05Title\x18\x03 \x01(\t\x12\x13\n\x0b\x44\x65scription\x18\x04 \x01(\t\x12\x11\n\tPosterUri\x18\x05 \x01(\t\x12\x15\n\rPublishStatus\x18\x06 \x01(\t\x12\x13\n\x0b\x41uditStatus\x18\x07 \x01(\x03\x12\x0c\n\x04Tags\x18\x08 \x03(\t\x12\x12\n\nCreateTime\x18\t \x01(\t\"\xa9\x01\n\tVideoInfo\x12/\n\tBasicInfo\x18\x01 \x01(\x0b\x32\x1c.Vcloud.Models.Vod.BasicInfo\x12\x31\n\nSourceInfo\x18\x02 \x01(\x0b\x32\x1d.Vcloud.Models.Vod.SourceInfo\x12\x38\n\x0eTranscodeInfos\x18\x03 \x03(\x0b\x32 .Vcloud.Models.Vod.TranscodeInfo\"^\n\x11GetVideoInfosData\x12\x33\n\rVideoInfoList\x18\x01 \x03(\x0b\x32\x1c.Vcloud.Models.Vod.VideoInfo\x12\x14\n\x0cNotExistVids\x18\x02 \x03(\t\"\x8d\x01\n\x15GetVideoInfosResponse\x12>\n\x10ResponseMetadata\x18\x01 \x01(\x0b\x32$.Vcloud.Models.Base.ResponseMetadata\x12\x34\n\x06Result\x18\x02 \x01(\x0b\x32$.Vcloud.Models.Vod.GetVideoInfosData\",\n\x1cGetRecommendedPostersRequest\x12\x0c\n\x04Vids\x18\x01 \x03(\t\"/\n\rStoreUriGroup\x12\x0b\n\x03Vid\x18\x01 \x01(\t\x12\x11\n\tStoreUris\x18\x02 \x03(\t\"c\n\x11GetRecPostersData\x12\x38\n\x0eStoreUriGroups\x18\x01 \x03(\x0b\x32 .Vcloud.Models.Vod.StoreUriGroup\x12\x14\n\x0cNotExistVids\x18\x02 \x03(\t\"\x8d\x01\n\x15GetRecPostersResponse\x12>\n\x10ResponseMetadata\x18\x01 \x01(\x0b\x32$.Vcloud.Models.Base.ResponseMetadata\x12\x34\n\x06Result\x18\x02 \x01(\x0b\x32$.Vcloud.Models.Vod.GetRecPostersDataBn\n\x1d\x63om.bytedanceapi.model.commonB\x08VodMediaP\x01Z\x08.;models\xa0\x01\x01\xd8\x01\x01\xc2\x02\x00\xca\x02\x11Vcloud\\Models\\Vod\xe2\x02\x19Vcloud\\Models\\GPBMetadatab\x06proto3'
+  serialized_pb=b'\n\x0fvod_media.proto\x12\x11Vcloud.Models.Vod\x1a\nbase.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x1cgoogle/api/annotations.proto\">\n\x1fUpdateVideoPublishStatusRequest\x12\x0b\n\x03Vid\x18\x01 \x01(\t\x12\x0e\n\x06Status\x18\x02 \x01(\t\"b\n UpdateVideoPublishStatusResponse\x12>\n\x10ResponseMetadata\x18\x01 \x01(\x0b\x32$.Vcloud.Models.Base.ResponseMetadata\"\xe2\x01\n\x16UpdateVideoInfoRequest\x12\x0b\n\x03Vid\x18\x01 \x01(\t\x12/\n\tPosterUri\x18\x02 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12+\n\x05Title\x18\x03 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12\x31\n\x0b\x44\x65scription\x18\x04 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12*\n\x04Tags\x18\x05 \x01(\x0b\x32\x1c.google.protobuf.StringValue\"Y\n\x17UpdateVideoInfoResponse\x12>\n\x10ResponseMetadata\x18\x01 \x01(\x0b\x32$.Vcloud.Models.Base.ResponseMetadata\"$\n\x14GetVideoInfosRequest\x12\x0c\n\x04Vids\x18\x01 \x01(\t\"W\n\x0f\x41udioStreamMeta\x12\r\n\x05\x43odec\x18\x01 \x01(\t\x12\x10\n\x08\x44uration\x18\x02 \x01(\x02\x12\x12\n\nSampleRate\x18\x03 \x01(\x03\x12\x0f\n\x07\x42itrate\x18\x04 \x01(\x03\"\x83\x01\n\x0fVideoStreamMeta\x12\r\n\x05\x43odec\x18\x01 \x01(\t\x12\x0e\n\x06Height\x18\x02 \x01(\x03\x12\r\n\x05Width\x18\x03 \x01(\x03\x12\x10\n\x08\x44uration\x18\x04 \x01(\x02\x12\x12\n\nDefinition\x18\x05 \x01(\t\x12\x0f\n\x07\x42itrate\x18\x06 \x01(\x03\x12\x0b\n\x03\x46ps\x18\x07 \x01(\x02\"\xb1\x02\n\rTranscodeInfo\x12\x0e\n\x06\x46ileId\x18\x01 \x01(\t\x12\x0b\n\x03Md5\x18\x02 \x01(\t\x12\x10\n\x08\x46ileType\x18\x03 \x01(\t\x12\x10\n\x08LogoType\x18\x04 \x01(\t\x12\x0f\n\x07\x45ncrypt\x18\x05 \x01(\x08\x12\x0e\n\x06\x46ormat\x18\x06 \x01(\t\x12\x10\n\x08\x44uration\x18\x07 \x01(\x02\x12\x0c\n\x04Size\x18\x08 \x01(\x03\x12\x10\n\x08StoreUri\x18\t \x01(\t\x12;\n\x0fVideoStreamMeta\x18\n \x01(\x0b\x32\".Vcloud.Models.Vod.VideoStreamMeta\x12;\n\x0f\x41udioStreamMeta\x18\x0b \x01(\x0b\x32\".Vcloud.Models.Vod.AudioStreamMeta\x12\x12\n\nCreateTime\x18\x0c \x01(\t\"\xf1\x01\n\nSourceInfo\x12\x0e\n\x06\x46ileId\x18\x01 \x01(\t\x12\x0b\n\x03Md5\x18\x02 \x01(\t\x12\x10\n\x08\x46ileType\x18\x03 \x01(\t\x12\r\n\x05\x43odec\x18\x04 \x01(\t\x12\x0e\n\x06Height\x18\x05 \x01(\x03\x12\r\n\x05Width\x18\x06 \x01(\x03\x12\x0e\n\x06\x46ormat\x18\x07 \x01(\t\x12\x10\n\x08\x44uration\x18\x08 \x01(\x02\x12\x0c\n\x04Size\x18\t \x01(\x03\x12\x10\n\x08StoreUri\x18\n \x01(\t\x12\x12\n\nDefinition\x18\x0b \x01(\t\x12\x0f\n\x07\x42itrate\x18\x0c \x01(\x03\x12\x0b\n\x03\x46ps\x18\r \x01(\x02\x12\x12\n\nCreateTime\x18\x0e \x01(\t\"\xb0\x01\n\tBasicInfo\x12\x11\n\tSpaceName\x18\x01 \x01(\t\x12\x0b\n\x03Vid\x18\x02 \x01(\t\x12\r\n\x05Title\x18\x03 \x01(\t\x12\x13\n\x0b\x44\x65scription\x18\x04 \x01(\t\x12\x11\n\tPosterUri\x18\x05 \x01(\t\x12\x15\n\rPublishStatus\x18\x06 \x01(\t\x12\x13\n\x0b\x41uditStatus\x18\x07 \x01(\x03\x12\x0c\n\x04Tags\x18\x08 \x03(\t\x12\x12\n\nCreateTime\x18\t \x01(\t\"\xa9\x01\n\tVideoInfo\x12/\n\tBasicInfo\x18\x01 \x01(\x0b\x32\x1c.Vcloud.Models.Vod.BasicInfo\x12\x31\n\nSourceInfo\x18\x02 \x01(\x0b\x32\x1d.Vcloud.Models.Vod.SourceInfo\x12\x38\n\x0eTranscodeInfos\x18\x03 \x03(\x0b\x32 .Vcloud.Models.Vod.TranscodeInfo\"^\n\x11GetVideoInfosData\x12\x33\n\rVideoInfoList\x18\x01 \x03(\x0b\x32\x1c.Vcloud.Models.Vod.VideoInfo\x12\x14\n\x0cNotExistVids\x18\x02 \x03(\t\"\x8d\x01\n\x15GetVideoInfosResponse\x12>\n\x10ResponseMetadata\x18\x01 \x01(\x0b\x32$.Vcloud.Models.Base.ResponseMetadata\x12\x34\n\x06Result\x18\x02 \x01(\x0b\x32$.Vcloud.Models.Vod.GetVideoInfosData\",\n\x1cGetRecommendedPostersRequest\x12\x0c\n\x04Vids\x18\x01 \x01(\t\"/\n\rStoreUriGroup\x12\x0b\n\x03Vid\x18\x01 \x01(\t\x12\x11\n\tStoreUris\x18\x02 \x03(\t\"c\n\x11GetRecPostersData\x12\x38\n\x0eStoreUriGroups\x18\x01 \x03(\x0b\x32 .Vcloud.Models.Vod.StoreUriGroup\x12\x14\n\x0cNotExistVids\x18\x02 \x03(\t\"\x8d\x01\n\x15GetRecPostersResponse\x12>\n\x10ResponseMetadata\x18\x01 \x01(\x0b\x32$.Vcloud.Models.Base.ResponseMetadata\x12\x34\n\x06Result\x18\x02 \x01(\x0b\x32$.Vcloud.Models.Vod.GetRecPostersData2\xad\x01\n\x0fVodMediaService\x12\x99\x01\n\x0fupdateVideoInfo\x12).Vcloud.Models.Vod.UpdateVideoInfoRequest\x1a*.Vcloud.Models.Vod.UpdateVideoInfoResponse\"/\x82\xd3\xe4\x93\x02)\x12\x10/UpdateVideoInfoZ\x15\"\x10/UpdateVideoInfo:\x01*Bn\n\x1d\x63om.bytedanceapi.model.commonB\x08VodMediaP\x01Z\x08.;models\xa0\x01\x01\xd8\x01\x01\xc2\x02\x00\xca\x02\x11Vcloud\\Models\\Vod\xe2\x02\x19Vcloud\\Models\\GPBMetadatab\x06proto3'
   ,
-  dependencies=[base__pb2.DESCRIPTOR,google_dot_protobuf_dot_wrappers__pb2.DESCRIPTOR,])
+  dependencies=[base__pb2.DESCRIPTOR,google_dot_protobuf_dot_wrappers__pb2.DESCRIPTOR,google_dot_api_dot_annotations__pb2.DESCRIPTOR,])
 
 
 
@@ -62,8 +63,8 @@ _UPDATEVIDEOPUBLISHSTATUSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=82,
-  serialized_end=144,
+  serialized_start=112,
+  serialized_end=174,
 )
 
 
@@ -94,8 +95,8 @@ _UPDATEVIDEOPUBLISHSTATUSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=146,
-  serialized_end=244,
+  serialized_start=176,
+  serialized_end=274,
 )
 
 
@@ -154,8 +155,8 @@ _UPDATEVIDEOINFOREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=247,
-  serialized_end=473,
+  serialized_start=277,
+  serialized_end=503,
 )
 
 
@@ -186,8 +187,8 @@ _UPDATEVIDEOINFORESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=475,
-  serialized_end=564,
+  serialized_start=505,
+  serialized_end=594,
 )
 
 
@@ -201,8 +202,8 @@ _GETVIDEOINFOSREQUEST = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='Vids', full_name='Vcloud.Models.Vod.GetVideoInfosRequest.Vids', index=0,
-      number=1, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -218,8 +219,8 @@ _GETVIDEOINFOSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=566,
-  serialized_end=602,
+  serialized_start=596,
+  serialized_end=632,
 )
 
 
@@ -271,8 +272,8 @@ _AUDIOSTREAMMETA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=604,
-  serialized_end=691,
+  serialized_start=634,
+  serialized_end=721,
 )
 
 
@@ -345,8 +346,8 @@ _VIDEOSTREAMMETA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=694,
-  serialized_end=825,
+  serialized_start=724,
+  serialized_end=855,
 )
 
 
@@ -454,8 +455,8 @@ _TRANSCODEINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=828,
-  serialized_end=1133,
+  serialized_start=858,
+  serialized_end=1163,
 )
 
 
@@ -577,8 +578,8 @@ _SOURCEINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1136,
-  serialized_end=1377,
+  serialized_start=1166,
+  serialized_end=1407,
 )
 
 
@@ -665,8 +666,8 @@ _BASICINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1380,
-  serialized_end=1556,
+  serialized_start=1410,
+  serialized_end=1586,
 )
 
 
@@ -711,8 +712,8 @@ _VIDEOINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1559,
-  serialized_end=1728,
+  serialized_start=1589,
+  serialized_end=1758,
 )
 
 
@@ -750,8 +751,8 @@ _GETVIDEOINFOSDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1730,
-  serialized_end=1824,
+  serialized_start=1760,
+  serialized_end=1854,
 )
 
 
@@ -789,8 +790,8 @@ _GETVIDEOINFOSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1827,
-  serialized_end=1968,
+  serialized_start=1857,
+  serialized_end=1998,
 )
 
 
@@ -804,8 +805,8 @@ _GETRECOMMENDEDPOSTERSREQUEST = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='Vids', full_name='Vcloud.Models.Vod.GetRecommendedPostersRequest.Vids', index=0,
-      number=1, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -821,8 +822,8 @@ _GETRECOMMENDEDPOSTERSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1970,
-  serialized_end=2014,
+  serialized_start=2000,
+  serialized_end=2044,
 )
 
 
@@ -860,8 +861,8 @@ _STOREURIGROUP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2016,
-  serialized_end=2063,
+  serialized_start=2046,
+  serialized_end=2093,
 )
 
 
@@ -899,8 +900,8 @@ _GETRECPOSTERSDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2065,
-  serialized_end=2164,
+  serialized_start=2095,
+  serialized_end=2194,
 )
 
 
@@ -938,8 +939,8 @@ _GETRECPOSTERSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2167,
-  serialized_end=2308,
+  serialized_start=2197,
+  serialized_end=2338,
 )
 
 _UPDATEVIDEOPUBLISHSTATUSRESPONSE.fields_by_name['ResponseMetadata'].message_type = base__pb2._RESPONSEMETADATA
@@ -1099,4 +1100,30 @@ _sym_db.RegisterMessage(GetRecPostersResponse)
 
 
 DESCRIPTOR._options = None
+
+_VODMEDIASERVICE = _descriptor.ServiceDescriptor(
+  name='VodMediaService',
+  full_name='Vcloud.Models.Vod.VodMediaService',
+  file=DESCRIPTOR,
+  index=0,
+  serialized_options=None,
+  create_key=_descriptor._internal_create_key,
+  serialized_start=2341,
+  serialized_end=2514,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='updateVideoInfo',
+    full_name='Vcloud.Models.Vod.VodMediaService.updateVideoInfo',
+    index=0,
+    containing_service=None,
+    input_type=_UPDATEVIDEOINFOREQUEST,
+    output_type=_UPDATEVIDEOINFORESPONSE,
+    serialized_options=b'\202\323\344\223\002)\022\020/UpdateVideoInfoZ\025\"\020/UpdateVideoInfo:\001*',
+    create_key=_descriptor._internal_create_key,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_VODMEDIASERVICE)
+
+DESCRIPTOR.services_by_name['VodMediaService'] = _VODMEDIASERVICE
+
 # @@protoc_insertion_point(module_scope)

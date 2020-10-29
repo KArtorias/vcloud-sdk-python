@@ -12,9 +12,7 @@ if __name__ == '__main__':
     # vod_service.set_sk('your sk')
 
     req = GetRecommendedPostersRequest()
-    req.Vids.append("vid")
-    req.Vids.append("vid1")
-    req.Vids.append("vid2")
+    req.Vids = "vid1,vid2"
 
     try:
         resp = vod_service.get_recommended_posters(req)

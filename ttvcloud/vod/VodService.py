@@ -374,7 +374,7 @@ class VodService(Service):
     # get video infos
     def get_video_infos(self, request: GetVideoInfosRequest) -> GetVideoInfosResponse:
         try:
-            params = {'Vids': ','.join(request.Vids)}
+            params = {'Vids': request.Vids}
             res = self.get('GetVideoInfos', params)
             if res == '':
                 raise Exception("InternalError")
@@ -385,7 +385,7 @@ class VodService(Service):
     # get recommended posters
     def get_recommended_posters(self, request: GetRecommendedPostersRequest) -> GetRecPostersResponse:
         try:
-            params = {'Vids': ','.join(request.Vids)}
+            params = {'Vids': request.Vids}
             res = self.get('GetRecommendedPoster', params)
             if res == '':
                 raise Exception("InternalError")
