@@ -2,7 +2,7 @@
 from __future__ import print_function
 
 from ttvcloud.vod.VodService import VodService
-from ttvcloud.vod.Model import *
+from ttvcloud.models.vod_media_pb2 import *
 
 if __name__ == '__main__':
     vod_service = VodService()
@@ -11,10 +11,16 @@ if __name__ == '__main__':
     # vod_service.set_ak('your ak')
     # vod_service.set_sk('your sk')
 
-    vids = ['vid1', 'vid2', 'vid3']
     req = GetRecommendedPostersRequest()
-    req.set_vids(vids)
+    req.Vids.append("vid")
+    req.Vids.append("vid1")
+    req.Vids.append("vid2")
 
-    resp = vod_service.get_recommended_posters(req)
-    print(resp.StoreUriGroups)
-    print(resp.NotExistVids)
+    try:
+        resp = vod_service.get_recommended_posters(req)
+    except Exception:
+        raise
+    else:
+        print(resp)
+        if resp.ResponseMetadata.Error.Code != '':
+            print(resp.ResponseMetadata.Error)

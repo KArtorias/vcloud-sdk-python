@@ -6,6 +6,7 @@ import json
 import os
 import threading
 import time
+import ttvcloud.models
 from zlib import crc32
 
 from ttvcloud.ApiInfo import ApiInfo
@@ -14,9 +15,11 @@ from ttvcloud.ServiceInfo import ServiceInfo
 from ttvcloud.base.Service import Service
 from ttvcloud.const.Const import *
 from ttvcloud.Policy import SecurityToken2, InnerToken, ComplexEncoder, Policy, Statement
+from ttvcloud.models.vod_play_pb2 import *
+from ttvcloud.models.vod_media_pb2 import *
+from ttvcloud.models.base_pb2 import *
 from ttvcloud.util.Util import *
-from ttvcloud.vod.Model import *
-
+from google.protobuf.json_format import Parse
 
 class VodService(Service):
     _instance_lock = threading.Lock()
@@ -37,10 +40,13 @@ class VodService(Service):
         self.lock = threading.Lock()
         super(VodService, self).__init__(self.service_info, self.api_info)
 
+    # TODO 测试完毕修改回来
     @staticmethod
     def get_service_info(region):
         service_info_map = {
-            'cn-north-1': ServiceInfo("vod.bytedanceapi.com", {'Accept': 'application/json'},
+            # 'cn-north-1': ServiceInfo("vod.bytedanceapi.com", {'Accept': 'application/json'},
+            #                           Credentials('', '', 'vod', 'cn-north-1'), 5, 5),
+            'cn-north-1': ServiceInfo("staging-openapi-boe.byted.org", {'Accept': 'application/json'},
                                       Credentials('', '', 'vod', 'cn-north-1'), 5, 5),
             'ap-singapore-1': ServiceInfo("vod.ap-singapore-1.bytedanceapi.com", {'Accept': 'application/json'},
                                           Credentials('', '', 'vod', 'ap-singapore-1'), 5, 5),
@@ -55,16 +61,27 @@ class VodService(Service):
 
     @staticmethod
     def get_api_info():
-        api_info = {"GetPlayInfo": ApiInfo("GET", "/", {"Action": "GetPlayInfo", "Version": "2020-08-01"}, {}, {}),
-                    "StartTranscode": ApiInfo("POST", "/", {"Action": "StartTranscode", "Version": "2018-01-01"}, {},
-                                              {}),
+        api_info = {
+                    "GetPlayInfo": ApiInfo("GET", "/", {"Action": "GetPlayInfo", "Version": "2020-08-01"}, {}, 
+                                                {}),
+                    "StartWorkflow": ApiInfo("POST", "/", {"Action": "StartWorkflow", "Version": "2020-08-01"}, {},
+                                                {}),
                     "UploadMediaByUrl": ApiInfo("GET", "/", {"Action": "UploadMediaByUrl", "Version": "2018-01-01"}, {},
                                                 {}),
+                    "UploadVideoByUrl": ApiInfo("GET", "/", {"Action": "UploadVideoByUrl", "Version": "2020-08-01"}, {},
+                                                {}),
+                    "QueryUploadTaskInfo": ApiInfo("GET", "/",
+                                                   {"Action": "QueryUploadTaskInfo", "Version": "2020-08-01"}, {},
+                                                   {}),
                     "ApplyUpload": ApiInfo("GET", "/", {"Action": "ApplyUpload", "Version": "2018-01-01"}, {}, {}),
+                    # TODO 测试完毕后把Header去掉
+                    "ApplyUploadInfo": ApiInfo("GET", "/", {"Action": "ApplyUploadInfo", "Version": "2020-08-01"}, {},
+                                               {"X-TT-ENV": "boe_husky_feature"}),
                     "CommitUpload": ApiInfo("POST", "/", {"Action": "CommitUpload", "Version": "2018-01-01"}, {}, {}),
                     "UpdateVideoPublishStatus": ApiInfo("GET", "/",
-                                                     {"Action": "UpdateVideoPublishStatus", "Version": "2020-08-01"}, {},
-                                                     {}),
+                                                     {"Action": "UpdateVideoPublishStatus", "Version": "2020-08-01"}, {}, {}),
+                    "CommitUploadInfo": ApiInfo("POST", "/", {"Action": "CommitUploadInfo", "Version": "2020-08-01"},
+                                                {}, {"X-TT-ENV": "boe_husky_feature"}),
                     "GetCdnDomainWeights": ApiInfo("GET", "/",
                                                    {"Action": "GetCdnDomainWeights", "Version": "2019-07-01"}, {}, {}),
                     "GetOriginVideoPlayInfo": ApiInfo("GET", "/",
@@ -75,31 +92,71 @@ class VodService(Service):
                                                {}),
                     "GetVideoInfos": ApiInfo("GET", "/", {"Action": "GetVideoInfos", "Version": "2020-08-01"}, {},
                                                {}),
-                    "GetRecommendedPosters": ApiInfo("GET", "/", {"Action": "GetRecommendedPosters", "Version": "2020-08-01"}, {},
+                    "GetRecommendedPoster": ApiInfo("GET", "/", {"Action": "GetRecommendedPoster", "Version": "2020-08-01"}, {},
                                                {}),
                     }
         return api_info
 
     # play
-    def get_play_info(self, params):
-        res = self.get("GetPlayInfo", params)
-        if res == '':
-            raise Exception("empty response")
-        res_json = json.loads(res)
-        return res_json
+    def get_play_info(self, request: VodGetPlayInfoRequest) -> VodGetPlayInfoResponse:
+        try:
+            params = dict()
+            if request.Vid is None:
+                raise Exception("InvalidParameter")
+            else:
+                params['Vid'] = request.Vid
+            if request.Format is None or request.Format == '':
+                params['Format'] = 'mp4'
+            else:
+                params['Format'] = request.Format
+            if request.Codec is None or request.Codec == '':
+                params['Codec'] = 'h264'
+            else:
+                params['Codec'] = request.Codec
+            if request.Definition is not None:
+                params['Definition'] = request.Definition
+            if request.FileType is None or request.FileType == '':
+                params['FileType'] = 'video'
+            else:
+                params['FileType'] = request.FileType
+            if request.LogoType is not None:
+                params['LogoType'] = request.LogoType
+            if request.Base64 is None or request.Base64 != 1:
+                params['Base64'] = 0
+            else:
+                params['Base64'] = 1
+            if request.Ssl is None or request.Ssl != 1:
+                params['Ssl'] = 0
+            else:
+                params['Ssl'] = 1
+            res = self.get("GetPlayInfo", params)
+            if res == '':
+                raise Exception("InternalError")
+            return Parse(res, VodGetPlayInfoResponse(), True)
+        except Exception:
+            raise
 
-    def get_origin_video_play_info(self, params):
-        res = self.get("GetOriginVideoPlayInfo", params)
-        if res == '':
-            raise Exception("empty response")
-        res_json = json.loads(res)
-        return res_json
-
-    def get_redirect_play(self, params):
-        uri = self.get_sign_url('RedirectPlay', params)
-        proto = 'http'
-        host = self.service_info.host
-        return '{}://{}/?{}'.format(proto, host, uri)
+    def get_origin_video_play_info(self, request:VodGetOriginalPlayInfoRequest) -> VodGetOriginalPlayInfoResponse:
+        try:
+            params = dict()
+            if request.Vid is None:
+                raise Exception("InvalidParameter")
+            else:
+                params['Vid'] = request.Vid
+            if request.Base64 is None or request.Base64 != 1:
+                params['Base64'] = 0
+            else:
+                params['Base64'] = 1
+            if request.Ssl is None or request.Ssl != 1:
+                params['Ssl'] = 0
+            else:
+                params['Ssl'] = 1
+            res = self.get("GetOriginVideoPlayInfo", params)
+            if res == '':
+                raise Exception("InternalError")
+            return Parse(res, VodGetOriginalPlayInfoResponse(), True)
+        except Exception:
+            raise
 
     def get_play_auth_token(self, params):
         token = self.get_sign_url('GetPlayInfo', params)
@@ -129,8 +186,23 @@ class VodService(Service):
         res_json = json.loads(res)
         return res_json
 
+    def apply_upload_info(self, params):
+        res = self.get('ApplyUploadInfo', params)
+        if res == '':
+            raise Exception("empty response")
+        res_json = json.loads(res)
+        return res_json
+
+    # TODO 注释，参照标准库
     def commit_upload(self, params, body):
         res = self.json('CommitUpload', params, body)
+        if res == '':
+            raise Exception("empty response")
+        res_json = json.loads(res)
+        return res_json
+
+    def commit_upload_info(self, params, form):
+        res = self.post('CommitUploadInfo', params, form)
         if res == '':
             raise Exception("empty response")
         res_json = json.loads(res)
@@ -142,6 +214,21 @@ class VodService(Service):
             raise Exception("empty response")
         res_json = json.loads(res)
         return res_json
+
+    def upload_video_by_url_tob(self, url_upload_request):
+        return self.upload_video_by_url(url_upload_request.to_dict())
+
+    def upload_video_by_url(self, params):
+        res = self.get('UploadVideoByUrl', params)
+        if res == '':
+            raise Exception("empty response")
+        return json.loads(res)
+
+    def query_upload_task_info(self, url_upload_query_request):
+        res = self.get('QueryUploadTaskInfo', url_upload_query_request.to_dict())
+        if res == '':
+            raise Exception("empty response")
+        return json.loads(res)
 
     def upload(self, space_name, file_path, file_type):
         if not os.path.isfile(file_path):
@@ -157,6 +244,43 @@ class VodService(Service):
         session_key = resp['Result']['UploadAddress']['SessionKey']
         auth = resp['Result']['UploadAddress']['StoreInfos'][0]['Auth']
         host = resp['Result']['UploadAddress']['UploadHosts'][0]
+
+        url = 'http://{}/{}'.format(host, oid)
+
+        headers = {'Content-CRC32': check_sum, 'Authorization': auth}
+        start = time.time()
+
+        upload_status = False
+        for i in range(3):
+            upload_status, resp = self.put(url, file_path, headers)
+            if upload_status:
+                break
+            else:
+                print(resp)
+        if not upload_status:
+            raise Exception("upload error")
+
+        cost = (time.time() - start) * 1000
+        file_size = os.path.getsize(file_path)
+        avg_speed = float(file_size) / float(cost)
+
+        return oid, session_key, avg_speed
+
+    def upload_tob(self, space_name, file_path):
+        if not os.path.isfile(file_path):
+            raise Exception("no such file on file path")
+        check_sum = hex(VodService.crc32(file_path))[2:]
+
+        apply_upload_info_request = {'SpaceName': space_name}
+        resp = self.apply_upload_info(apply_upload_info_request)
+        if 'Error' in resp['ResponseMetadata']:
+            raise Exception(resp['ResponseMetadata']['Error']['Message'])
+
+        # TODO 提出来， storeinfos 长度要判断
+        oid = resp['Result']['Data']['UploadAddress']['StoreInfos'][0]['StoreUri']
+        session_key = resp['Result']['Data']['UploadAddress']['SessionKey']
+        auth = resp['Result']['Data']['UploadAddress']['StoreInfos'][0]['Auth']
+        host = resp['Result']['Data']['UploadAddress']['UploadHosts'][0]
 
         url = 'http://{}/{}'.format(host, oid)
 
@@ -195,64 +319,79 @@ class VodService(Service):
             raise Exception(resp['ResponseMetadata']['Error']['Message'])
         return resp['Result']
 
+    def upload_video_tob(self, upload_video_reqeust):
+        oid, session_key, avg_speed = self.upload_tob(upload_video_reqeust.space_name, upload_video_reqeust.file_path)
+
+        form = dict()
+        form['SessionKey'] = session_key
+        form['SpaceName'] = upload_video_reqeust.space_name
+        funcs_str = json.dumps(upload_video_reqeust.function_list)
+        form['Functions'] = funcs_str
+        form['CallbackArgs'] = upload_video_reqeust.callback_args
+
+        resp = self.commit_upload_info({}, form)
+        if 'Error' in resp['ResponseMetadata']:
+            raise Exception(resp['ResponseMetadata']['Error']['Message'])
+        return resp
+
     def upload_poster(self, vid, space_name, file_path, file_type):
         oid, session_key, avg_speed = self.upload(space_name, file_path, file_type)
 
         req = UpdateVideoInfoRequest()
-        req.set_vid(vid)
-        req.set_poster_uri(oid)
+        req.Vid(vid)
+        req.PosterUri.Value = oid
         try:
-            self.update_video_info(req)
-            return oid
+            resp = self.update_video_info(req)
         except Exception:
             raise
+        else:
+            if resp.ResponseMetadata.Error.Code != '':
+                raise Exception(resp.ResponseMetadata.Error.Message)
+        return oid
 
     # video info
-    def update_video_info(self, req):
-        params = {'Vid':req.get_vid()}
-        if req.get_poster_uri() is not None:
-            params['PosterUri'] = req.get_poster_uri()
-        if req.get_title() is not None:
-            params['Title'] = req.get_title()
-        if req.get_description() is not None:
-            params['Description'] = req.get_description()
-        if req.get_tags() is not None:
-            params['Tags'] = req.get_tags()
+    def update_video_info(self, request: UpdateVideoInfoRequest) -> UpdateVideoInfoResponse:
+        try:
+            if request.Vid is None:
+                raise Exception("InvalidParameter")
+            params = {'Vid':request.Vid}
+            if request.PosterUri is not None:
+                params['PosterUri'] = request.PosterUri.value
+            if request.Title is not None:
+                params['Title'] = request.Title.value
+            if request.Description is not None:
+                params['Description'] = request.Description.value
+            if request.Tags is not None:
+                params['Tags'] = request.Tags.value
 
-        res = self.get('UpdateVideoInfo', params)
-        if res == '':
-            raise Exception("empty response")
-        res_json = json.loads(res)
-        if "Error" in res_json['ResponseMetadata']:
-            raise Exception(res_json['ResponseMetadata']['Error']['Code'])
+            res = self.get('UpdateVideoInfo', params)
+            if res == '':
+                raise Exception("InternalError")
+            return Parse(res, UpdateVideoInfoResponse(), True)
+        except Exception as e:
+            raise e
 
     # get video infos
-    def get_video_infos(self, req):
-        params = {'Vids': ','.join(req.get_vids())}
-        res = self.get('GetVideoInfos', params)
-        if res == '':
-            raise Exception("empty response")
-        res_json = json.loads(res)
-        if 'Error' not in res_json['ResponseMetadata']:
-            resp = GetVideoInfosResponse()
-            resp._deserialize(res_json['Result'])
-            return resp
-        else:
-            raise Exception(res_json['ResponseMetadata']['Error']['Code'])
+    def get_video_infos(self, request: GetVideoInfosRequest) -> GetVideoInfosResponse:
+        try:
+            params = {'Vids': ','.join(request.Vids)}
+            res = self.get('GetVideoInfos', params)
+            if res == '':
+                raise Exception("InternalError")
+            return Parse(res, GetVideoInfosResponse(), True)
+        except Exception as e:
+            raise e
 
     # get recommended posters
-    def get_recommended_posters(self, req):
-        params = {'Vids': ','.join(req.get_vids())}
-        res = self.get('GetRecommendedPosters', params)
-        if res == '':
-            raise Exception("empty response")
-        res_json = json.loads(res)
-        if 'Error' not in res_json['ResponseMetadata']:
-            resp = GetRecommendedPostersResponse()
-            resp._deserialize(res_json['Result'])
-            return resp
-        else:
-            raise Exception(res_json['ResponseMetadata']['Error']['Code'])
+    def get_recommended_posters(self, request: GetRecommendedPostersRequest) -> GetRecPostersResponse:
+        try:
+            params = {'Vids': ','.join(request.Vids)}
+            res = self.get('GetRecommendedPoster', params)
+            if res == '':
+                raise Exception("InternalError")
+            return Parse(res, GetRecPostersResponse(), True)
+        except Exception as e:
+            raise e
 
     @staticmethod
     def crc32(file_path):
@@ -262,22 +401,25 @@ class VodService(Service):
         return prev & 0xFFFFFFFF
 
     # transcode
-    def start_transcode(self, params, body):
-        res = self.json('StartTranscode', params, json.dumps(body))
+    def start_workflow(self, params):
+        res = self.post('StartWorkflow', {}, params)
         if res == '':
             raise Exception("empty response")
         res_json = json.loads(res)
         return res_json
 
     # publish
-    def update_video_publish_status(self, req):
-        params = {'Vid':req.get_vid(), 'Status':req.get_status()}
-        res = self.get('UpdateVideoPublishStatus', params)
-        if res == '':
-            raise Exception("empty response")
-        res_json = json.loads(res)
-        if "Error" in res_json['ResponseMetadata']:
-            raise Exception(res_json['ResponseMetadata']['Error']['Code'])
+    def update_video_publish_status(self, request: UpdateVideoPublishStatusRequest) -> UpdateVideoPublishStatusResponse:
+        try:
+            if request.Vid is None or request.Status is None:
+                raise Exception("InvalidParameter")
+            params = {'Vid':request.Vid, 'Status':request.Status}
+            res = self.get('UpdateVideoPublishStatus', params)
+            if res == '':
+                raise Exception("InternalError")
+            return Parse(res, UpdateVideoPublishStatusResponse(), True)
+        except Exception as e:
+            raise e
 
     # img
     def get_domain_weights(self, space_name):
